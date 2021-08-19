@@ -1,0 +1,34 @@
+;*******************************************************
+; Want a clear path for learning AutoHotkey; Take a look at our AutoHotkey Udemy courses.  They're structured in a way to make learning AHK EASY
+; Right now you can  get a coupon code here: https://the-Automator.com/Learn
+;*******************************************************
+#SingleInstance,Force
+;************************************************************
+;~ https://marketplace.zoom.us/develop/apps
+;~ JWT JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.
+JWT:="eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6ImxYdmx0SUNpU3JHS3RoSDQzM3lDTlEiLCJleHAiOjE2MjYzMTMxNzUsImlhdCI6MTYyNTcwODM3NX0.YDteKCi8lOgKsZ7-wFWF3PPPyt1vdXSuRFISwVXEnIo"
+;~ EndPoint:="https://api.zoom.us/v2/users/justin.ar.rasheed@gmail.com/meetings"
+EndPoint:="https://api.zoom.us/v2/meetings/82188609499/registrants?page_size=100" ;page_number=2
+
+Reg:=API_Call("POST", Endpoint, QS, JWT, Payload)
+;~ M(registrants)
+for key, value in Reg.Registrants {
+	;~ Last_name:=value.Last_name
+	;~ First_name:=value.First_name
+	;~ email:=value.email
+	data.=value.First_name a_tab value.Last_name a_tab value.email "`n"
+}
+MsgBox % Data
+return
+
+;********API call**********************
+API_Call(Type, Endpoint, QS, JWT, Payload) {
+	HTTP := ComObjCreate("WinHttp.WinHttpRequest.5.1") ;Create COM Object
+	HTTP.Open(TYPE,EndPoint QS) ;Start the request
+	HTTP.SetRequestHeader("Authorization", "Bearer " JWT) ;Authorization in the form of a Bearer token
+	HTTP.SetRequestHeader("Content-Type","application/json") ;JSON
+	HTTP.Send(Payload) ;If POST request put data in "Payload" variable
+	oAHK:=ParseJSON(HTTP.ResponseText) ;Make sure the ParseJSON function is in your library
+	DebugWindow(Obj2String(oAHK), 1,1,200,0)
+	Return oAHK ;Return the object
+}
